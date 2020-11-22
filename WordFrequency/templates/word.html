@@ -1,0 +1,38 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Word - {{ word }}</title>
+{% endblock %}
+
+{% block body %}
+    <div class="mx-auto my-2" style="width:90%;">
+        {% if exist %}
+            <div class="card text-center">
+                <div class="card-body">
+                    <h2 class="card-title">{{ word }}</h2>
+                    <p class="card-text">Count: {{ times }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <h5>Related Words:</h5>
+                        {% for relate in related %}
+                            <div><a href="https://english4formosa.com/dictionary/{{ relate.word }}/" target="_blank">{{ relate.word }}</a></div>
+                        {% endfor %}
+                    </li>
+                    <li class="list-group-item">
+                        <h5>Included Articles:</h5>
+                        {% for article in articles %}
+                            <div><a href="{% url 'article' article.article %}">{{ article.article }}</a></div>
+                        {% endfor %}
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">No such word was found.</h5>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+{% block title %}
+    <title>Stopwords</title>
+{% endblock %}
+
+{% block body %}
+    <div class="mx-auto" style="width:90%;">
+        <div class="d-flex align-content-start flex-wrap">
+            {% for object in object_list %}
+                <div class="card mx-1 my-1" style="width: 10rem;">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">NO. {{ forloop.counter }}</h6>
+                        <h5 class="card-title">{{ object.word }}</h5>
+                        <div class="mt-2">
+                            <div>
+                                <form action="{% url 'delStopwords' %}" method="post">
+                                    {% csrf_token %}
+                                    <input name="word" value="{{ object.word }}" hidden>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

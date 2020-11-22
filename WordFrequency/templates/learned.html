@@ -1,0 +1,64 @@
+{% extends '_base.html' %}
+{% block title %}
+    <title>Learned Words</title>
+{% endblock %}
+
+{% block body %}
+    <div class="mx-auto" style="width:90%;">
+        <div class="d-flex align-content-start flex-wrap">
+            {% for object in object_list %}
+                <div class="card mx-1 my-1" style="width: 13rem;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><a href="{% url 'word' object.word %}">{{ object.word }}</a></h5>
+                        <div class="mt-2">
+                            <div class="mt-1">
+                                <form action="{% url 'unlearned' %}" method="post">
+                                    {% csrf_token %}
+                                    <input name="word" value="{{ object.word }}" hidden>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Unlearned</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <nav aria-label="Page navigation my-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}" {% if page_obj.has_previous %}page="{{ page_obj.previous_page_number }}"{% endif %}>
+                    <button class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; Previous</span>
+                    </button>
+                </li>
+                <li class="page-item disabled">
+                    <button class="page-link">Page {{ page_obj.number }} / {{ paginator.num_pages }} </button>
+                </li>
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}" {% if page_obj.has_next %}page="{{ page_obj.next_page_number }}"{% endif %}>
+                    <button class="page-link" aria-label="Next">
+                        <span aria-hidden="true">Next &raquo;</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let url = new URL(window.location), reset_page_params = () => {
+            url.searchParams.delete("page")
+        }, update_url_params = (a, e) => {
+            url.searchParams.set(a, e), window.location.assign(url.href)
+        };
+        2 === window.performance.navigation.type && window.location.reload();
+
+        (() => {
+            let e = document.getElementsByClassName("page-item");
+            for (let t = 0; t < e.length; t++) e[t].classList.contains("disabled") || e[t].addEventListener("click", e => {
+                update_url_params("page", e.currentTarget.getAttribute("page")), e.preventDefault(), e.stopPropagation()
+            })
+        })();
+
+    </script>
+{% endblock %}

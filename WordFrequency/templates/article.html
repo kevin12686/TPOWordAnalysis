@@ -1,0 +1,33 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Article - {{ title }}</title>
+{% endblock %}
+
+{% block body %}
+    <style>
+        br {
+            content: "";
+            margin: 2em;
+            display: block;
+            font-size: 100%;
+        }
+    </style>
+
+    <div class="mx-auto" style="width:90%;">
+        {% if exist %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">{{ title }}</h5>
+                    <p class="card-text text-justify">{{ content | linebreaksbr }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">No such article was found.</h5>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

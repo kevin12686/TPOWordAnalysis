@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'rank' %}">Word Rank</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'tools' %}">Tool Page</a>
+                </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'learnedList' %}">Learned</a>
+                </li>
+            {% endif %}
+        </ul>
+        {% if user.is_authenticated %}
+            <div class="my-2 my-lg-0">
+                <a href="{% url 'logout' %}">
+                    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Logout</button>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
