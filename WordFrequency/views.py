@@ -7,7 +7,7 @@ from django.views.generic import FormView, ListView
 from django.views.generic.base import View, TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from .dictionaries import lookup_dictionaryapi
-from .forms import UploadArticleForm
+from .forms import UploadArticleForm, RegistrationForm
 from .models import Article, Word, Frequency, Stopwords, Learned
 
 
@@ -16,6 +16,18 @@ from .models import Article, Word, Frequency, Stopwords, Learned
 class SuperuserPermissionMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class RegistrationView(FormView):
+    form_class = RegistrationForm
+    template_name = 'form.html'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return reverse('rank')
 
 
 class Tools(SuperuserPermissionMixin, TemplateView):

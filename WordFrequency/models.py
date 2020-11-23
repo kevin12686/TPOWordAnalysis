@@ -48,3 +48,8 @@ class Learned(models.Model):
     class Meta:
         ordering = ['user', 'word']
         verbose_name = 'Learned'
+
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=255, primary_key=True, verbose_name='code')
+    available = models.BooleanField(default=True, verbose_name='available')
