@@ -162,6 +162,13 @@ class WordDetail(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         word = Word.objects.filter(restored=self.word)
         context['exist'] = word.exists()
+        if not context['exist']:
+            try:
+                self.word = Word.objects.get(word=self.word).restored
+                word = Word.objects.filter(restored=self.word)
+                context['exist'] = word.exists()
+            except Word.DoesNotExist:
+                pass
         if context['exist']:
             feq = Frequency.objects.filter(word__restored=self.word)
             context['word'] = self.word

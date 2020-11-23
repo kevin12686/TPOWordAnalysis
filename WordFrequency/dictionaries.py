@@ -9,9 +9,9 @@ def lookup_dictionaryapi(word):
         resp_json = resp.json()
         if resp_json['data']:
             definition = resp_json['data']['content'][0]['entries'][0]['posBlocks'][0]['definitions'][0]['definition']
-            plural_match = re.search(r'the plural of <a[^>]*>(\w+)</a>', definition)
-            past_match = re.search(r'past tense of <a[^>]*>(\w+)</a>', definition)
-            pp_match = re.search(r'past participle of <a[^>]*>(\w+)</a>', definition)
+            plural_match = re.search(r'the plural of <a[^>]*>(\w+)(<sup>\d+</sup>)?</a>', definition)
+            past_match = re.search(r'past tense of <a[^>]*>(\w+)(<sup>\d+</sup>)?</a>', definition)
+            pp_match = re.search(r'past participle of <a[^>]*>(\w+)(<sup>\d+</sup>)?</a>', definition)
             if plural_match:
                 return plural_match.group(1).lower(), resp.text
             elif past_match:
