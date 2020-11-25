@@ -38,7 +38,7 @@
         <script>
             (() => {
                 let highlight_sentence = (string, str_to_highlight) => {
-                    let reg = new RegExp('[^\.]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*\.', 'gi');
+                    let reg = new RegExp('[^\.\?\!]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*[\.|\?|\!]', 'gi');
                     return string.replace(reg, (str) => {
                         return '<span style="background-color: lightskyblue;"><b>' + str + '</b></span>';
                     });
