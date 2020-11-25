@@ -9,7 +9,7 @@
             {% for object in object_list %}
                 <div class="card mx-1 my-1" style="width: 13rem;">
                     <div class="card-body text-center">
-                        <h5 class="card-title"><a href="{% url 'word' object.word %}">{{ object.word }}</a></h5>
+                        <h5 class="card-title"><a href="{% url 'word' object.word %}" target="_blank">{{ object.word }}</a></h5>
                         <div class="mt-2">
                             <div class="mt-1">
                                 <form action="{% url 'unlearned' %}" method="post">

@@ -10,25 +10,25 @@
                 <div class="card mx-1 my-1" style="width: 13rem;">
                     <div class="card-body text-center">
                         <h6 class="card-subtitle mb-2 text-muted">NO. {{ forloop.counter0 | add:page_obj.start_index }}</h6>
-                        <h5 class="card-title"><a href="{% url 'word' object.word__restored %}">{{ object.word__restored }}</a></h5>
+                        <h5 class="card-title"><a href="{% url 'word' object.word__restored %}" target="_blank">{{ object.word__restored }}</a></h5>
                         <p>{{ object.times }} times</p>
                         <div class="mt-2">
-                            {% if user.is_superuser %}
-                                <div>
-                                    <form action="{% url 'addStopwords' %}" method="post">
-                                        {% csrf_token %}
-                                        <input name="word" value="{{ object.word__restored }}" hidden>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Stopwords</button>
-                                    </form>
-                                </div>
-                            {% endif %}
-                            <div class="mt-1">
+                            <div>
                                 <form action="{% url 'learned' %}" method="post">
                                     {% csrf_token %}
                                     <input name="word" value="{{ object.word__restored }}" hidden>
                                     <button type="submit" class="btn btn-sm btn-outline-success">Learned</button>
                                 </form>
                             </div>
+                            {% if user.is_superuser %}
+                                <div class="mt-1">
+                                    <form action="{% url 'addStopwords' %}" method="post">
+                                        {% csrf_token %}
+                                        <input name="word" value="{{ object.word__restored }}" hidden>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hide</button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

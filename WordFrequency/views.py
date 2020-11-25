@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.generic import FormView, ListView
 from django.views.generic.base import View, TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from .dictionaries import lookup_dictionaryapi
+from .dictionaries import lookup_dictionaryapi_parse, lookup_dictionaryapi
 from .forms import UploadArticleForm, RegistrationForm
 from .models import Article, Word, Frequency, Stopwords, Learned
 
@@ -74,16 +74,28 @@ class UploadArticle(SuperuserPermissionMixin, FormView):
 
 class WordRestore(SuperuserPermissionMixin, View):
     def get(self, request, *args, **kwargs):
-        for w in Word.objects.filter(restored=''):
-            try:
-                rw, js = lookup_dictionaryapi(w.word)
-                if rw:
-                    w.restored = rw
-                    w.raw_json = js
-                    w.save()
-            except Exception:
-                pass
-        return render(self.request, 'notify.html', {'title': '還原狀態', 'content': '成功'})
+        parse = request.GET.get('parse')
+        if parse == '1':
+            for w in Word.objects.filter(restored=''):
+                try:
+                    rw, js = lookup_dictionaryapi_parse(w.word)
+                    if rw:
+                        w.restored = rw
+                        w.raw_json = js
+                        w.save()
+                except Exception:
+                    pass
+            return render(self.request, 'notify.html', {'title': '線上還原狀態', 'content': '成功'})
+        else:
+            for w in Word.objects.exclude(raw_json=''):
+                try:
+                    rw, js = lookup_dictionaryapi(w.word, w.raw_json)
+                    if w.restored != rw:
+                        w.restored = rw
+                        w.save()
+                except Exception:
+                    pass
+            return render(self.request, 'notify.html', {'title': '本地還原狀態', 'content': '成功'})
 
 
 class Ranking(LoginRequiredMixin, ListView):
@@ -149,6 +161,7 @@ class ArticleDetail(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.article = self.kwargs.get('article')
+        self.highlight = request.GET.get('highlight')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -158,6 +171,13 @@ class ArticleDetail(LoginRequiredMixin, TemplateView):
             context['title'] = article.title
             context['content'] = article.content
             context['exist'] = True
+
+            context['highlight'] = ''
+            if self.highlight:
+                related = Word.objects.filter(restored=self.highlight).values_list('word', flat=True)
+                if related.exists():
+                    context['highlight'] = '(%s)' % '|'.join(related)
+
         except Article.DoesNotExist:
             context['exist'] = False
         return context
@@ -186,5 +206,7 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             context['word'] = self.word
             context['times'] = feq.aggregate(Sum('count'))['count__sum']
             context['related'] = word
-            context['articles'] = feq.order_by('article').distinct().values('article')
+            context['articles'] = feq.values('article').order_by('article').distinct().annotate(sum=Sum('count')).order_by('-sum')
+            context['learned'] = Learned.objects.filter(user=self.request.user, word=self.word)
+            context['stopword'] = Stopwords.objects.filter(word=self.word)
         return context

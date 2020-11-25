@@ -11,18 +11,50 @@
                 <div class="card-body">
                     <h2 class="card-title">{{ word }}</h2>
                     <p class="card-text">Count: {{ times }}</p>
+                    {% if learned %}
+                        <form action="{% url 'unlearned' %}" method="post">
+                            {% csrf_token %}
+                            <input name="word" value="{{ object.word }}" hidden>
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Unlearned</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'learned' %}" method="post">
+                            {% csrf_token %}
+                            <input name="word" value="{{ object.word__restored }}" hidden>
+                            <button type="submit" class="btn btn-sm btn-outline-success">Learned</button>
+                        </form>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <div class="mt-1">
+                            {% if stopword %}
+                                <form action="{% url 'delStopwords' %}" method="post">
+                                    {% csrf_token %}
+                                    <input name="word" value="{{ object.word }}" hidden>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Show</button>
+                                </form>
+                            {% else %}
+                                <form action="{% url 'addStopwords' %}" method="post">
+                                    {% csrf_token %}
+                                    <input name="word" value="{{ object.word__restored }}" hidden>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Hide</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <h5>Related Words:</h5>
                         {% for relate in related %}
-                            <div><a href="https://english4formosa.com/dictionary/{{ relate.word }}/" target="_blank">{{ relate.word }}</a></div>
+                            <div>{{ relate.word }} (<a href="https://dictionary.cambridge.org/zht/%E8%A9%9E%E5%85%B8/%E8%8B%B1%E8%AA%9E-%E6%BC%A2%E8%AA%9E-%E7%B9%81%E9%AB%94//{{ relate.word }}/" target="_blank">Cambridge</a>, <a href="https://english4formosa.com/dictionary/{{ relate.word }}/"
+                                                                                                                                                                                                                                     target="_blank">E4F</a>)
+                            </div>
                         {% endfor %}
                     </li>
                     <li class="list-group-item">
                         <h5>Included Articles:</h5>
                         {% for article in articles %}
-                            <div><a href="{% url 'article' article.article %}">{{ article.article }}</a></div>
+                            <div><a href="{% url 'article' article.article %}?highlight={{ word }}">{{ article.article }} (count: {{ article.sum }})</a></div>
                         {% endfor %}
                     </li>
                 </ul>

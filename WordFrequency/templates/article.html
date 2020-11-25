@@ -19,9 +19,10 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-center">{{ title }}</h5>
-                    <p class="card-text text-justify">{{ content | linebreaksbr }}</p>
+                    <p class="card-text text-justify" id="context">{{ content | linebreaksbr }}</p>
                 </div>
             </div>
+            {{ highlight | json_script:'highlight' }}
         {% else %}
             <div class="card text-center">
                 <div class="card-body">
@@ -31,3 +32,30 @@
         {% endif %}
     </div>
 {% endblock %}
+
+{% if exist %}
+    {% block script %}
+        <script>
+            (() => {
+                let highlight_sentence = (string, str_to_highlight) => {
+                    let reg = new RegExp('[^\.]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*\.', 'gi');
+                    return string.replace(reg, (str) => {
+                        return '<span style="background-color: lightskyblue;"><b>' + str + '</b></span>';
+                    });
+                };
+                let highlight_word = (string, str_to_highlight) => {
+                    let reg = new RegExp('(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])', 'gi');
+                    return string.replace(reg, (str) => {
+                        return '<span style="color: red;">' + str + '</span>';
+                    });
+                };
+                let context = document.getElementById('context');
+                let highlight = JSON.parse(document.getElementById('highlight').textContent);
+                if (highlight) {
+                    context.innerHTML = highlight_sentence(context.innerHTML, highlight);
+                    context.innerHTML = highlight_word(context.innerHTML, highlight);
+                }
+            })();
+        </script>
+    {% endblock %}
+{% endif %}
