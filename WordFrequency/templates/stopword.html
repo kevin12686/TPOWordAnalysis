@@ -10,13 +10,13 @@
                 <div class="card mx-1 my-1" style="width: 10rem;">
                     <div class="card-body text-center">
                         <h6 class="card-subtitle mb-2 text-muted">NO. {{ forloop.counter }}</h6>
-                        <h5 class="card-title">{{ object.word }}</h5>
+                        <h5 class="card-title"><a href="{% url 'word' object.word %}" target="_blank">{{ object.word }}</a></h5>
                         <div class="mt-2">
                             <div>
                                 <form action="{% url 'delStopwords' %}" method="post">
                                     {% csrf_token %}
                                     <input name="word" value="{{ object.word }}" hidden>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Show</button>
                                 </form>
                             </div>
                         </div>

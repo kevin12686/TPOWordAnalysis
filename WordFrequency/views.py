@@ -1,4 +1,5 @@
 import re
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.db.models import Sum
@@ -116,7 +117,10 @@ class StopwordsList(SuperuserPermissionMixin, ListView):
 class StopwordsCreate(SuperuserPermissionMixin, View):
     def post(self, request, *args, **kwargs):
         word = request.POST.get('word')
-        Stopwords.objects.get_or_create(word=word)
+        try:
+            Stopwords.objects.get_or_create(word=word)
+        except ValidationError:
+            pass
         return HttpResponseRedirect(reverse('rank'))
 
 
@@ -142,7 +146,10 @@ class LearnedList(LoginRequiredMixin, ListView):
 class LearnedCreate(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         word = request.POST.get('word')
-        Learned.objects.get_or_create(user=request.user, word=word)
+        try:
+            Learned.objects.get_or_create(user=request.user, word=word)
+        except ValidationError:
+            pass
         return HttpResponseRedirect(reverse('rank'))
 
 
