@@ -9,19 +9,19 @@
         {% if exist %}
             <div class="card text-center">
                 <div class="card-body">
-                    <h2 class="card-title">{{ word }}</h2>
+                    <h2 class="card-title">{{ word }} <a href="{% url 'editNote' word %}" class="text-danger" title="Note"><i class="fas fa-bookmark"></i></a></h2>
                     <p class="card-text">Count: {{ times }}</p>
                     {% if learned %}
                         <form action="{% url 'unlearned' %}" method="post">
                             {% csrf_token %}
-                            <input name="word" value="{{ object.word }}" hidden>
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Unlearned</button>
+                            <input name="word" value="{{ word }}" hidden>
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Unlearned</button>
                         </form>
                     {% else %}
                         <form action="{% url 'learned' %}" method="post">
                             {% csrf_token %}
-                            <input name="word" value="{{ object.word__restored }}" hidden>
-                            <button type="submit" class="btn btn-sm btn-outline-success">Learned</button>
+                            <input name="word" value="{{ word }}" hidden>
+                            <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-check"></i> Learned</button>
                         </form>
                     {% endif %}
                     {% if user.is_superuser %}
@@ -29,13 +29,13 @@
                             {% if stopword %}
                                 <form action="{% url 'delStopwords' %}" method="post">
                                     {% csrf_token %}
-                                    <input name="word" value="{{ object.word }}" hidden>
+                                    <input name="word" value="{{ word }}" hidden>
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Show</button>
                                 </form>
                             {% else %}
                                 <form action="{% url 'addStopwords' %}" method="post">
                                     {% csrf_token %}
-                                    <input name="word" value="{{ object.word__restored }}" hidden>
+                                    <input name="word" value="{{ word }}" hidden>
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Hide</button>
                                 </form>
                             {% endif %}

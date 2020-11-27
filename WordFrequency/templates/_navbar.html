@@ -7,17 +7,20 @@
         <ul class="navbar-nav mr-auto">
             {% if user.is_superuser %}
                 <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'tools' %}active{% endif %}" href="{% url 'tools' %}">Tools Page</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'tools' %}active{% endif %}" href="{% url 'tools' %}" target="_blank">Tools Page</a>
                 </li>
             {% endif %}
             {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+                    <a class="nav-link" href="{% url 'admin:index' %}" target="_blank">Admin</a>
                 </li>
             {% endif %}
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'learnedList' %}">Learned</a>
+                    <a class="nav-link {% if request.resolver_match.url_name == 'learnedList' %}active{% endif %}" href="{% url 'learnedList' %}">Learned</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'noteList' %}active{% endif %}" href="{% url 'noteList' %}">Note</a>
                 </li>
             {% endif %}
         </ul>

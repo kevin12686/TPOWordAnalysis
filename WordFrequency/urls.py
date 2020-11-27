@@ -15,7 +15,23 @@ Including another URLconf
 """
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import RegistrationView, Tools, UploadArticle, WordRestore, Ranking, StopwordsList, StopwordsCreate, StopwordsDelete, LearnedList, LearnedCreate, LearnedDelete, ArticleDetail, WordDetail
+from .views import (RegistrationView,
+                    Tools,
+                    UploadArticle,
+                    WordRestore,
+                    Ranking,
+                    StopwordsList,
+                    StopwordsCreate,
+                    StopwordsDelete,
+                    LearnedList,
+                    LearnedCreate,
+                    LearnedDelete,
+                    NoteList,
+                    NoteDetail,
+                    NoteEdit,
+                    NoteDelete,
+                    ArticleDetail,
+                    WordDetail, )
 
 urlpatterns = [
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
@@ -31,6 +47,10 @@ urlpatterns = [
     path('learn/list/', LearnedList.as_view(), name='learnedList'),
     path('learn/', LearnedCreate.as_view(), name='learned'),
     path('unlearn/', LearnedDelete.as_view(), name='unlearned'),
+    path('note/word/<str:word>/', NoteDetail.as_view(), name='noteDetail'),
+    path('note/list/', NoteList.as_view(), name='noteList'),
+    path('note/edit/<str:word>/', NoteEdit.as_view(), name='editNote'),
+    path('note/delete/', NoteDelete.as_view(), name='delNote'),
     path('article/<str:article>/', ArticleDetail.as_view(), name='article'),
     path('word/<str:word>/', WordDetail.as_view(), name='word'),
 ]

@@ -9,38 +9,52 @@
             {% for object in object_list %}
                 <div class="card mx-1 my-1" style="width: 13rem;">
                     <div class="card-body text-center">
-                        <h5 class="card-title"><a href="{% url 'word' object.word %}" target="_blank">{{ object.word }}</a></h5>
+                        <h5 class="card-title">{{ object.word }}</h5>
+                        <h6 class="card-subtitle my-3 text-muted">{{ object.timestamp | default_if_none:'N/A' }}</h6>
                         <div class="mt-2">
+                            <div class="mt-1">
+                                <a href="{% url 'word' object.word %}" target="_blank">
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</button>
+                                </a>
+                            </div>
                             <div class="mt-1">
                                 <form action="{% url 'unlearned' %}" method="post">
                                     {% csrf_token %}
                                     <input name="word" value="{{ object.word }}" hidden>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Unlearned</button>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Unlearned</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+            {% empty %}
+                <div class="card mx-1 my-1" style="width: 13rem;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">N/A</h5>
+                    </div>
+                </div>
             {% endfor %}
         </div>
 
-        <nav aria-label="Page navigation my-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}" {% if page_obj.has_previous %}page="{{ page_obj.previous_page_number }}"{% endif %}>
-                    <button class="page-link" aria-label="Previous">
-                        <span aria-hidden="true">&laquo; Previous</span>
-                    </button>
-                </li>
-                <li class="page-item disabled">
-                    <button class="page-link">Page {{ page_obj.number }} / {{ paginator.num_pages }} </button>
-                </li>
-                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}" {% if page_obj.has_next %}page="{{ page_obj.next_page_number }}"{% endif %}>
-                    <button class="page-link" aria-label="Next">
-                        <span aria-hidden="true">Next &raquo;</span>
-                    </button>
-                </li>
-            </ul>
-        </nav>
+        {% if object_list %}
+            <nav aria-label="Page navigation my-3">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}" {% if page_obj.has_previous %}page="{{ page_obj.previous_page_number }}"{% endif %}>
+                        <button class="page-link" aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item disabled">
+                        <button class="page-link">Page {{ page_obj.number }} / {{ paginator.num_pages }} </button>
+                    </li>
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}" {% if page_obj.has_next %}page="{{ page_obj.next_page_number }}"{% endif %}>
+                        <button class="page-link" aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
     </div>
 {% endblock %}
 

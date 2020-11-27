@@ -4,12 +4,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.db.models import Sum
 from django.urls import reverse
-from django.views.generic import FormView, ListView
+from django.views.generic import FormView, ListView, UpdateView
 from django.views.generic.base import View, TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from .dictionaries import lookup_dictionaryapi_parse, lookup_dictionaryapi
-from .forms import UploadArticleForm, RegistrationForm
-from .models import Article, Word, Frequency, Stopwords, Learned
+from .forms import UploadArticleForm, RegistrationForm, NoteForm
+from .models import Article, Word, Frequency, Stopwords, Learned, Note
 
 
 # Create your views here.
@@ -21,7 +21,7 @@ class SuperuserPermissionMixin(UserPassesTestMixin):
 
 class RegistrationView(FormView):
     form_class = RegistrationForm
-    template_name = 'form.html'
+    template_name = 'registerForm.html'
 
     def form_valid(self, form):
         form.save()
@@ -44,7 +44,7 @@ class Tools(SuperuserPermissionMixin, TemplateView):
 
 class UploadArticle(SuperuserPermissionMixin, FormView):
     form_class = UploadArticleForm
-    template_name = 'form.html'
+    template_name = 'uploadForm.html'
 
     def form_valid(self, form):
         articles = form.cleaned_data['file'].read().decode()
@@ -106,7 +106,7 @@ class Ranking(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Frequency.objects.exclude(word__restored__in=Stopwords.objects.all().values('word')).exclude(word__restored__in=Learned.objects.filter(user=self.request.user).values('word')).exclude(word__restored='').order_by('word__restored').values('word__restored').distinct().annotate(
-            times=Sum('count')).order_by('-times')
+            times=Sum('count')).filter(times__gt=0).order_by('-times')
 
 
 class StopwordsList(SuperuserPermissionMixin, ListView):
@@ -158,9 +158,69 @@ class LearnedDelete(LoginRequiredMixin, View):
         word = request.POST.get('word')
         try:
             Learned.objects.get(user=request.user, word=word).delete()
-        except Stopwords.DoesNotExist:
+        except Learned.DoesNotExist:
             pass
         return HttpResponseRedirect(reverse('learnedList'))
+
+
+class NoteDetail(LoginRequiredMixin, TemplateView):
+    template_name = 'note.html'
+
+    def get(self, request, *args, **kwargs):
+        self.word = self.kwargs.get('word')
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            note = Note.objects.get(user=self.request.user, word=self.word)
+            context['word'] = self.word
+            context['note'] = note.note
+            context['exist'] = True
+        except Note.DoesNotExist:
+            context['exist'] = False
+        return context
+
+
+class NoteList(LoginRequiredMixin, ListView):
+    model = Note
+    template_name = 'noteList.html'
+    paginate_by = 50
+
+    def get_queryset(self):
+        return Note.objects.filter(user=self.request.user)
+
+
+class NoteEdit(LoginRequiredMixin, FormView):
+    template_name = 'editNote.html'
+    form_class = NoteForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user, 'word': self.kwargs.get('word')})
+        try:
+            obj = Note.objects.get(user=self.request.user, word=self.kwargs.get('word'))
+            kwargs.update({'instance': obj})
+        except Note.DoesNotExist:
+            pass
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form=form)
+
+    def get_success_url(self):
+        return reverse('noteDetail', kwargs={'word': self.kwargs.get('word')})
+
+
+class NoteDelete(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        word = request.POST.get('word')
+        try:
+            Note.objects.get(user=request.user, word=word).delete()
+        except Note.DoesNotExist:
+            pass
+        return HttpResponseRedirect(reverse('noteList'))
 
 
 class ArticleDetail(LoginRequiredMixin, TemplateView):

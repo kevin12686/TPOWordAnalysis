@@ -61,6 +61,7 @@ class Stopwords(models.Model):
 class Learned(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='learned', verbose_name='User')
     word = models.CharField(max_length=255, verbose_name='Word')
+    timestamp = models.DateTimeField(null=True, auto_now_add=True, verbose_name='Timestamp')
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -68,8 +69,24 @@ class Learned(models.Model):
 
     class Meta:
         unique_together = ['user', 'word']
-        ordering = ['user', 'word']
+        ordering = ['-timestamp', 'user', 'word']
         verbose_name = 'Learned'
+
+
+class Note(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='notes', verbose_name='User')
+    word = models.CharField(max_length=255, verbose_name='Word')
+    note = models.TextField(blank=True, verbose_name='Note')
+    timestamp = models.DateTimeField(null=True, auto_now=True, verbose_name='Timestamp')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ['user', 'word']
+        ordering = ['-timestamp', 'user', 'word']
+        verbose_name = 'Note'
 
 
 class Coupon(models.Model):

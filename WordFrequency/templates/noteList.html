@@ -1,6 +1,6 @@
 {% extends '_base.html' %}
 {% block title %}
-    <title>Vocabulary Rank</title>
+    <title>Notes</title>
 {% endblock %}
 
 {% block body %}
@@ -9,31 +9,21 @@
             {% for object in object_list %}
                 <div class="card mx-1 my-1" style="width: 13rem;">
                     <div class="card-body text-center">
-                        <h6 class="card-subtitle mb-2 text-muted">NO. {{ forloop.counter0 | add:page_obj.start_index }}</h6>
-                        <h5 class="card-title">{{ object.word__restored }}</h5>
-                        <p>{{ object.times }} times</p>
+                        <h5 class="card-title">{{ object.word }}</h5>
+                        <h6 class="card-subtitle my-3 text-muted">{{ object.timestamp | default_if_none:'N/A' }}</h6>
                         <div class="mt-2">
-                            <div>
-                                <a href="{% url 'word' object.word__restored %}" target="_blank">
+                            <div class="mt-1">
+                                <a href="{% url 'noteDetail' object.word %}" target="_blank">
                                     <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</button>
                                 </a>
                             </div>
                             <div class="mt-1">
-                                <form action="{% url 'learned' %}" method="post">
+                                <form action="{% url 'delNote' %}" method="post">
                                     {% csrf_token %}
-                                    <input name="word" value="{{ object.word__restored }}" hidden>
-                                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-check"></i> Learned</button>
+                                    <input name="word" value="{{ object.word }}" hidden>
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
                                 </form>
                             </div>
-                            {% if user.is_superuser %}
-                                <div class="mt-1">
-                                    <form action="{% url 'addStopwords' %}" method="post">
-                                        {% csrf_token %}
-                                        <input name="word" value="{{ object.word__restored }}" hidden>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hide</button>
-                                    </form>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>

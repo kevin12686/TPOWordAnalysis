@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Word, Frequency, Stopwords, Learned, Coupon
+from .models import Article, Word, Frequency, Stopwords, Learned, Note, Coupon
 
 
 # Register your models here.
@@ -21,7 +21,11 @@ class StopwordsAdmin(admin.ModelAdmin):
 
 
 class LearnedAdmin(admin.ModelAdmin):
-    list_display = ['user', 'word']
+    list_display = ['user', 'word', 'timestamp']
+
+
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ['user', 'word', 'timestamp']
 
 
 class CouponAdmin(admin.ModelAdmin):
@@ -33,4 +37,5 @@ admin.site.register(Word, WordAdmin)
 admin.site.register(Frequency, FrequencyAdmin)
 admin.site.register(Stopwords, StopwordsAdmin)
 admin.site.register(Learned, LearnedAdmin)
+admin.site.register(Note, NoteAdmin)
 admin.site.register(Coupon, CouponAdmin)
