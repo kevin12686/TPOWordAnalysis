@@ -5,7 +5,7 @@
 
 {% block body %}
     <div class="mx-auto" style="width:90%;">
-        <div class="d-flex align-content-start flex-wrap">
+        <div class="d-flex align-content-start justify-content-center flex-wrap mb-3">
             {% for object in object_list %}
                 <div class="card mx-1 my-1" style="width: 13rem;">
                     <div class="card-body text-center">
@@ -21,7 +21,7 @@
                                 <form action="{% url 'unlearned' %}" method="post">
                                     {% csrf_token %}
                                     <input name="word" value="{{ object.word }}" hidden>
-                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Unlearned</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i> Unlearned</button>
                                 </form>
                             </div>
                         </div>

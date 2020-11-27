@@ -1,10 +1,12 @@
 import re
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.db.models import Sum
 from django.urls import reverse
-from django.views.generic import FormView, ListView, UpdateView
+from django.views.generic import FormView, ListView
 from django.views.generic.base import View, TemplateView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from .dictionaries import lookup_dictionaryapi_parse, lookup_dictionaryapi
@@ -107,6 +109,24 @@ class Ranking(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Frequency.objects.exclude(word__restored__in=Stopwords.objects.all().values('word')).exclude(word__restored__in=Learned.objects.filter(user=self.request.user).values('word')).exclude(word__restored='').order_by('word__restored').values('word__restored').distinct().annotate(
             times=Sum('count')).filter(times__gt=0).order_by('-times')
+
+
+class RankingXSLX(UserPassesTestMixin, View):
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="word_frequency.xlsx"'
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'frequency'
+        ws.append(['Word', 'Count'])
+        for data in Frequency.objects.exclude(word__restored__in=Stopwords.objects.all().values('word')).exclude(word__restored='').order_by('word__restored').values('word__restored').distinct().annotate(times=Sum('count')).filter(times__gt=0).order_by('-times'):
+            ws.append([data['word__restored'], data['times']])
+        response.write(save_virtual_workbook(wb))
+        return response
 
 
 class StopwordsList(SuperuserPermissionMixin, ListView):
