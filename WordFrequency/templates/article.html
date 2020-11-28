@@ -14,7 +14,7 @@
         }
     </style>
 
-    <div class="mx-auto" style="width:90%;">
+    <div class="mx-auto my-2" style="width:90%;">
         {% if exist %}
             <div class="card">
                 <div class="card-body">
@@ -38,13 +38,21 @@
         <script>
             (() => {
                 let highlight_sentence = (string, str_to_highlight) => {
-                    let reg = new RegExp('[^\.\?\!]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*[\.|\?|\!]', 'gi');
+                    try {
+                        let reg = new RegExp('[^\.\?\!]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*[\.|\?|\!]', 'gi');
+                    } catch (e) {
+                        let reg = new RegExp('[^.]*\W' + str_to_highlight + '\W[^.]*\.', 'gi');
+                    }
                     return string.replace(reg, (str) => {
                         return '<span style="background-color: lightskyblue;"><b>' + str + '</b></span>';
                     });
                 };
                 let highlight_word = (string, str_to_highlight) => {
-                    let reg = new RegExp('(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])', 'gi');
+                    try {
+                        let reg = new RegExp('(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])', 'gi');
+                    } catch (e) {
+                        let reg = new RegExp('\W' + str_to_highlight + '\W', 'gi');
+                    }
                     return string.replace(reg, (str) => {
                         return '<span style="color: red;">' + str + '</span>';
                     });
