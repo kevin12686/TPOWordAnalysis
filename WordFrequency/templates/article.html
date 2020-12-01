@@ -42,7 +42,7 @@
                     try {
                         reg = new RegExp('[^\.\?\!]*(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])[^\.]*[\.|\?|\!]', 'gi');
                     } catch (e) {
-                        reg = new RegExp('[^.]*\W' + str_to_highlight + '\W[^.]*\.', 'gi');
+                        reg = new RegExp('[^.]*[^a-zA-Z0-9]' + str_to_highlight + '[^a-zA-Z0-9][^.]*\.', 'gi');
                     }
                     return string.replace(reg, (str) => {
                         return '<span style="background-color: lightskyblue;"><b>' + str + '</b></span>';
@@ -53,7 +53,7 @@
                     try {
                         reg = new RegExp('(?<![a-zA-Z0-9])' + str_to_highlight + '(?![a-zA-Z0-9])', 'gi');
                     } catch (e) {
-                        reg = new RegExp('\W' + str_to_highlight + '\W', 'gi');
+                        reg = new RegExp('[^a-zA-Z0-9]' + str_to_highlight + '[^a-zA-Z0-9]', 'gi');
                     }
                     return string.replace(reg, (str) => {
                         return '<span style="color: red;">' + str + '</span>';
