@@ -298,7 +298,7 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             context['learned'] = Learned.objects.filter(user=self.request.user, word=self.word)
             context['stopword'] = Stopwords.objects.filter(word=self.word)
             try:
-                pronunciation = json.loads(word[0].raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
+                pronunciation = json.loads(Word.objects.get(word=self.word).raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
                 context['sound'] = next(iter(pronunciation.values()))
             except Exception:
                 context['sound'] = ''
