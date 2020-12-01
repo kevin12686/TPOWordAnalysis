@@ -290,7 +290,6 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             except Word.DoesNotExist:
                 pass
         if context['exist']:
-            raw_json = Word.objects.get(word=self.word).raw_json
             feq = Frequency.objects.filter(word__restored=self.word)
             context['word'] = self.word
             context['times'] = feq.aggregate(Sum('count'))['count__sum']
@@ -299,7 +298,7 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             context['learned'] = Learned.objects.filter(user=self.request.user, word=self.word)
             context['stopword'] = Stopwords.objects.filter(word=self.word)
             try:
-                pronunciation = json.loads(raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
+                pronunciation = json.loads(word[0].raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
                 context['sound'] = next(iter(pronunciation.values()))
             except Exception:
                 context['sound'] = ''
