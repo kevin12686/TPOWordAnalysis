@@ -13,7 +13,7 @@
                         <h6 class="card-subtitle my-3 text-muted">{{ object.timestamp | default_if_none:'N/A' }}</h6>
                         <div class="mt-2">
                             <div class="mt-1">
-                                <a href="{% url 'word' object.word %}" target="_blank">
+                                <a href="{% url 'word' object.word %}">
                                     <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</button>
                                 </a>
                             </div>
