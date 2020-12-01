@@ -1,4 +1,5 @@
 import re
+import json
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from django.core.exceptions import ValidationError
@@ -289,6 +290,7 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             except Word.DoesNotExist:
                 pass
         if context['exist']:
+            raw_json = Word.objects.get(word=self.word).raw_json
             feq = Frequency.objects.filter(word__restored=self.word)
             context['word'] = self.word
             context['times'] = feq.aggregate(Sum('count'))['count__sum']
@@ -296,4 +298,9 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             context['articles'] = feq.values('article').order_by('article').distinct().annotate(sum=Sum('count')).order_by('-sum')
             context['learned'] = Learned.objects.filter(user=self.request.user, word=self.word)
             context['stopword'] = Stopwords.objects.filter(word=self.word)
+            try:
+                pronunciation = json.loads(raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
+                context['sound'] = next(iter(pronunciation.values()))
+            except Exception:
+                context['sound'] = ''
         return context

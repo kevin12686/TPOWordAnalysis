@@ -10,6 +10,10 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h2 class="card-title">{{ word }} <a href="{% url 'editNote' word %}" class="text-danger" title="Note"><i class="fas fa-bookmark"></i></a></h2>
+                    {% if sound %}
+                        <audio id="sound" src="{{ sound }}" preload="auto"></audio>
+                        <h5><a class="text-muted" href="javascript:document.getElementById('sound').play();"><i class="fas fa-volume-up"></i></a></h5>
+                    {% endif %}
                     <p class="card-text">Count: {{ times }}</p>
                     {% if learned %}
                         <form action="{% url 'unlearned' %}" method="post">
