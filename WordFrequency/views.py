@@ -299,7 +299,10 @@ class WordDetail(LoginRequiredMixin, TemplateView):
             context['stopword'] = Stopwords.objects.filter(word=self.word)
             try:
                 pronunciation = json.loads(Word.objects.get(word=self.word).raw_json)['data']['content'][0]['entries'][0]['pronunciation']['audio']
-                context['sound'] = next(iter(pronunciation.values()))
+                if 'audio/mpeg' in pronunciation:
+                    context['sound'] = pronunciation['audio/mpeg']
+                else:
+                    context['sound'] = next(iter(pronunciation.values()))
             except Exception:
                 context['sound'] = ''
         return context
